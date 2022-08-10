@@ -1,0 +1,265 @@
+---
+title: "Butovens Médé"
+output: html_notebook
+---
+```{r}
+library(tidyverse)
+```
+
+
+### 1
+#### Load data and convert appropriate categoriacal variables to factors
+```{r}
+# Loading the data
+anxdata <- read.table(file.choose())
+
+# Inspecting the data
+names(anxdata) # Look at variable names (if any)
+dim(anxdata) # Look at dimension of the data
+str(anxdata) # Look at structure of dataset
+
+
+# Convert categorical variable to factor
+anxdata <- within(anxdata,{
+  id <- factor(id)
+  exercise <- factor(exercise)
+  therapy <- factor(therapy)
+  time <- factor(time)
+})
+
+summary(anxdata) # Summary of data
+```
+***
+#### Look at variable relationship through plots
+```{r}
+# How to use "interaction.plot":
+# interaction.plot(dataset$var1, dataset$var2, dataset$response)
+# x.factor = "variable for x-axis"
+# trace.factor = "grouping data"
+# response = "variable for y-axis"
+# 
+# Additional Options:
+# xlab = "label for x-axis"
+# ylab = "label for y-axis"
+# main = "title for the plot"
+# ylim = "range of values along y-axis"
+# trace.label = "legend label for trace"
+# type = "put markers on plot"
+# pch = "customize markers on plot"
+# col = "add color to plot"
+# fixed = "orders factor based on dataset"
+# lty = "line type for the lines drawn, with sensible default"
+
+# Saving data in different variable, and recoding it with different labels (For plot-clarity purposes only)
+anxdata2 <-anxdata
+
+with(anxdata2, interaction.plot(x.factor = time[exercise=="individual"], trace.factor = therapy[exercise=="individual"],
+                               response = anxiety[exercise=="individual"],
+                                ylim = c(80, 150), lty = c(1, 12, 8),trace.label = "therapy",
+                                ylab = "mean of anxiety", xlab = "time",
+                               main = "Different therapy conditons over time for Indiv.Exerc.Grp "))
+
+# Plot Exercise group 1
+with(anxdata, interaction.plot(x.factor = time[exercise==1], trace.factor = therapy[exercise==1],
+                               response = anxiety[exercise==1],
+                                ylim = c(80, 150), lty = c(1, 12, 8),trace.label = "therapy",
+                                ylab = "mean of anxiety", xlab = "time",
+                               main = "Anxiety score over time by therapy groups"))
+
+```
+* Line for treatment group 3 is apart from treatment groups 1 & 2 by end of study (possible group effect)
+* Line changes over time for group 3 from t1 to t2 (possible time effect)
+* Line 3 not parallel to lines 1 and 2 (possible interaction effect)
+
+**Interpretation:**
+The plot above shows the difference in mean anxiety scores over time for the different therapy groups knowing that participants in all groups also exercised individually. The graph tells that among graduate students who had to exercise indiviuallly, those who also were in the no-therapy group (i.e. grp 1) and the one on one therapy group (i.e. grp 2) started with similar level of anxiety which did not significaltly evolve over time. However, it appears that the grad students who exercised individually and were in the group therapy session (i.e. grp 3), started with an anxiety level that was similar to that of the other two groups, but subsequently rose (from time point 1 to 2) and then tapered off (from time point 2 to 3). The final mean anxiety score at the end of the study exhibited by students who attended the group therapy sessions seem to be fairly different from the levels of the other two groups (which are nearly identical). Thus, it may be possible that there is a group effect, a time effect, and a "group by time" interaction (albeit small) for the grad students who were in the collective therapy sessions (and exercised individually) compare to the other two groups.  
+
+```{r}
+# Plot Exercise group 2
+with(anxdata, interaction.plot(time[exercise==2], therapy[exercise==2], anxiety[exercise==2],
+                               ylim = c(80, 150), lty = c(1, 12, 8),trace.label = "therapy", 
+                               ylab = "mean of anxiety", xlab = "time", main = "Exercise = 2"))
+```
+* Line for treatment group 3 is clearly apart from treatment groups 1 & 2 by end of study (group effect)
+* Line changes over time for group 3 (time effect)
+* Line 3 not parallel to lines 1 and 2 (interaction effect)
+
+**Interpretation:**
+The plot above shows the difference in mean anxiety scores over time for the different therapy groups knowing that participants in all groups also exercised collectively. Here we can see that the grad students you attended group therapy sessions started with similar anxiety level as the other two groups (i.e. no therapy, and one on one therapy groups), but their anxiety level clearly and continously increased over time. The 'no therapy' and the 'one and one therapy' groups showed similar anxiety level over time, and to one another. Thus, here it is very likely that there is a group effect, a time effect and a group by time interaction effect for the grad students who were in the collective therapy sessions (and also exercised collectivelly) compare to the other two groups.  
+
+```{r}
+# Plot Therapy group 1
+with(anxdata, interaction.plot(time[therapy==1], exercise[therapy==1], anxiety[therapy==1],
+                               ylim = c(80, 150), lty = c(1, 12, 8),trace.label = "exercise", 
+                               ylab = "mean of anxiety", xlab = "time", main = "Therapy = 1")) 
+```
+* Lines for treatment groups are close (group effect unlikely)
+* Line changes very slighly over time for group 1 (time effect uncertain)
+* Lines not parallel (interaction effect possible)
+
+**Interpretation:**
+The plot above shows the difference in mean anxiety scores over time for the different exercice-type groups knowing that all grad students in those groups were not in undergoing therapy. It appears that the group that exercised individually and the one that did collective excercise (while not going to therapy sessions) experienced very similar anxiety level throughout the study, thus there doesn't seem to be any group effect. In addition, aside from graduate students who excercised individually and experienced very slight changes in anxiety level during the study, it appears that overall the anxiety level remained constant over time for practical purposes. There may be an interaction effect, but it would seem to be very low.
+
+
+```{r}
+# Plot Therapy group 2
+with(anxdata, interaction.plot(time[therapy==2], exercise[therapy==2], anxiety[therapy==2],
+                               ylim = c(80, 150), lty = c(1, 12, 8),trace.label = "exercise", 
+                               ylab = "mean of anxiety", xlab = "time", main = "Therapy = 2")) 
+```
+* Lines for treatment groups are close (no group effect)
+* Lines do not seem to change over time (no time effect)
+* Lines quasi parallel (no interaction effect)
+
+**Interpretation:**
+The plot above shows the difference in mean anxiety scores over time for the different exercice-type groups knowing that all grad students in those groups had one on one therapy sessions. Here the graph shows that for those who attended the one on one therapy sessions, it did not matter whether they did excercise individually or collectively (in addition to therapy). The the mean anxiety level for both groups were nearly identical and constant over time. Thus, it could be said that there is no group effect, no time effect and no interaction effect for the different exercise-type groups for those who attended the one on one therapy sessions.
+
+
+```{r}
+# Plot Therapy group 3
+with(anxdata, interaction.plot(time[therapy==3], exercise[therapy==3], anxiety[therapy==3],
+                               ylim = c(80, 150), lty = c(1, 12, 8),trace.label = "exercise", 
+                               ylab = "mean of anxiety", xlab = "time", main = "Therapy = 3")) 
+```
+* Lines for treatment groups are appart (group effect likely)
+* Lines change over time (time effect very likely)
+* Lines not parallel (interaction effect very likely)
+
+**Interpretation:**
+The plot above shows the difference in mean anxiety scores over time for the different exercice-type groups knowing that all grad students in those groups had group therapy sessions. Here we see that for the grad students who attended the group therapy sessions, those who in addition did some group exercise had higher mean anxiety score overall than those who exercised individually. In addition, the anxiety level for both groups increased over time. However, while the anxiety level for the grad students who exercised collectively increased until the end of the study, those who excercised individually saw their anxiety level tapered off by the end of the study. Therefore, for these groups we are likely to see a group effect, a time effect and an interaction effect.
+
+***
+
+Both sets of plots seems equally interpretable. They show the same data from different perspectives, provide complementary views and they probably also answer slighly different questions (or at least they put the focus on different aspects of the data). The first set of plots which is divided by exercice types reveals that group therapy sessions are detrimental to grad students regardless of whether they engage in group exercise or individual. The second set of plots which is divided by therapy types provides an easier visualalization of the previous plot highlights and reveals the extent to which those who engage in different forms of exercise while concurrently attending group therapy sessions differ in their mean anxiety score.The fact that the second set of plots makes the finding of the first clearer is I think random. Given another dataset that could have been the other way around.
+
+
+### 2
+#### Run independance variance/coviariance structure
+```{r}
+# Run anova on data (3-factorial within subject anova)
+anxdata_aov <- aov(anxiety ~ therapy * exercise * time + Error(id), data = anxdata)
+summary(anxdata_aov)
+
+```
+* The results from this independence variance/coviariance structure anova shows that 'between group test' have significant main effects of therapy and exercise as well as a significant interaction between therapy and exercise.
+
+* In addition the within group test indicates significant main effect of time as well as a significant 2-way interaction between therapy and time, and a significant 3-way interaction between therapy, exercise and time.
+
+* The interaction between exercise by time was not significant.
+
+* *Note: In this anova independent structure is assumed (which is usually used for between subject analysis). In this structure, variance are equivalent and equals (i.e. t1 = t2 = t3 etc...) and each time point are not related to each other at all (i.e. covariance between time points is zero. e.g. score that someone has at t2 is unrelated to score same person as at t1 -> unreasonable assumption to make because time is nested within person)* 
+
+
+### 3
+#### Run other variance/coviariance structure
+```{r}
+## compound symmetry ##
+library (nlme)
+longg <- groupedData(anxiety ~ as.numeric(therapy) * as.numeric(exercise) * as.numeric(time)
+                     | id, data = anxdata)
+fit.cs <- gls(anxiety ~ therapy * exercise * time, data = longg, corr = corCompSymm(form = ~ 1 | id))
+summary(fit.cs)
+
+```
+*Note: A variance/covariance matrix that has a compound symmetry structure has its variance at each time points (i.e. diagonal values) identical (i.e. variance across each time points assumed to be the same like independent structure matrix); however unlike the independent structure matrix, this matrix assumes that there is a relation between each time point (i.e. off diagonal/ covariance between each time point is non zero). Yet in this matrix the covariance between time points is assumed to be the same. In other words variance between t1 & t2 varies exactly the same way as variance between t2 & t3 etc...*
+
+* very strict assumptions : equal variance across time and all time points are equally related to each other (equal variance across all time pairings)
+* does not take into account that points closer in time with each other have more similare variance than pointx further apart in time 
+* model may be misspecified if paatern that we see in data don't follow these strict assumptions
+
+
+
+```{r}
+## unstructured ##
+fit.un <- gls(anxiety ~ therapy * exercise * time, data = longg, corr = corCompSymm(form = ~ 1 | id),
+              weights = varIdent(form = ~ 1 | time))
+summary(fit.un)
+anova(fit.un)
+```
+*Note: A variance/covariance matrix that is unstructured allows for different variance at each time points to happen, and they also allow for variation between time points (i.e. coviariance between each time points non-zero and can be different)*
+
+* most flexible structure; used in manova.
+
+```{r}
+## autoregressive ##
+fit.ar1 <- gls(anxiety ~ therapy * exercise * time, data = longg, corr = corAR1(form = ~ 1 | id))
+summary(fit.ar1)
+anova(fit.ar1)
+```
+*Note: A variance/covariance matrix that has an autoregressive structure allows for autoregression within the model. It takes into account that observations that are closer to each other in time have variance more related with each other (i.e. t1 & t2 more closely related than t1 & t3). In this structure variance are equivalent, same across time points, but covariance varies between pairs of time points according to how far (or how close) in time they are between one another (i.e. time point closer to eah other have same covariance structure; time point that are further away have different covariance structure)*
+
+```{r}
+## autoregressive with heterogenous variances##
+fit.arh1 <- gls(anxiety ~ therapy * exercise * time, data = longg, corr = corAR1(form = ~ 1 | id),
+               weights = varIdent(form = ~ 1 | time))
+summary(fit.arh1)
+anova(fit.arh1)
+```
+
+*Note: A variance/covariance matrix that has an autoregressive with heterogenous variance not only takes into account that observations that are closer to each other in time have (co)variance more related with each other than observations that are further apart (i.e. t1 & t2 more closely related than t1 & t3); but also it allows for different variances at each time points across time.*
+
+
+#### Model comparison
+```{r}
+anova(fit.cs,fit.un)
+anova(fit.cs,fit.ar1)
+anova(fit.cs,fit.arh1)
+```
+Against all other structures the compound symmetry structure has the lowest AIC (which penalizes for the number of parameters in the model) and it also has the lowest BIC (which in addition to penalize for the number of parameters also penalizes for the sample size of the model i.e. the bigger the sample the bigger the penalty). But, we can also see that the L.Ratio is not significant between any of the compared structures. There doesn't seem to be substantial differences in those models. Thus, any differences seen it these models compared to the compound symmetry structure one are marginal differences.
+
+### 4
+#### Look at contrast
+```{r}
+# Make copies of categorical variables
+longg[, c("therapyf", "exercisef", "timef")] <- longg[, c("therapy", "exercise", "time")]
+
+# Set up contrast
+m <- matrix(c(c(-1/2, 1/2, 0), c(-1/3, -1/3, 2/3)), ncol = 2)
+contrasts(longg$therapyf) <- m
+(contrasts(longg$timef) <- m)
+(contrasts(longg$exercisef) <- c(-1/2, 1/2))
+
+```
+
+#### Model that produce test statistics for contrasts
+```{r}
+model.cs <- gls(anxiety ~ therapyf * exercisef * timef, data = longg, corr = corCompSymm(,form = ~1 | id))
+summary(model.cs)
+```
+Bonferroni correction (take desired alpha value and divide it by the number of comparisons): 
+alpha* = (.05/ n-1) = .05/ 17-1 = 0.0031 
+
+
+
+### 6 
+#### Checking for contrats orthogonality (i.e. independence or non-correlated)
+To test independent contrasts we need ot look at contrast coefficients in pairwise fashion between:
+
+* Linear vs Quadratic
+* Linear vs Cubic
+* Quadratic vs Cubic
+
+multiply the coefficients column-wise and add across the product obtained. If the results is zero then the two set of contrasts are independent.
+
+It appears that b), c) and d) represent a complete set of mutually orthogonal contrasts.
+* 'b' is testing for a linear trend. This can be seen in its coeffient that are monotonically incresing
+* 'c' is testing for a quadratic trend. Its coefficients demonstrate one bend
+* 'd' is testing for a cubic trend. Its coefficients demonstrate two bends
+
+#### Demonstration that the contrast sets chosen are orthoganal polynomial
+```{r}
+b <- c(-3, -1, 1, 3)
+c <- c(1, -1, -1, 1)
+d <- c(-1, 3, -3, 1)
+
+Lin_Quad <- sum( b * c )
+Lin_Quad
+
+Lin_Cube <- sum( b * d )
+Lin_Cube
+
+Quad_Cube <- sum( c * d )
+Quad_Cube
+```
+
+
