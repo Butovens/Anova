@@ -1,5 +1,6 @@
 ---
-title: "Butovens Médé"
+title: "Anova"
+author: "Butovens Médé"
 output: html_notebook
 ---
 ```{r}
